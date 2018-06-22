@@ -14,10 +14,10 @@ def update_yara_rule_folder(folder):
 def get_yara_files(folder):
 	all_yara_files = []
 	for root, directories, filenames in os.walk(folder):
-		if root == folder or root == "Mobile_Malware":
+		if root == folder or root == "rules/Mobile_Malware":
 			continue
 		for file_name in filenames:
-			if file_name == "MALW_TinyShell_Backdoor_gen.yar":
+			if file_name == "MALW_TinyShell_Backdoor_gen.yar" or file_name == "RomeoFoxtrot_mod.yara.error":
 				continue
 			if ".yar" in file_name:
 				all_yara_files.append(os.path.join(root, file_name))
@@ -29,7 +29,7 @@ def remove_incompatible_imports(files):
 	for yara_file in files:
 		with open(yara_file, 'r') as fd:
 			yara_in_file = fd.read()
-			if not (("import \"math\"" in yara_in_file) or ("import \"hash\"" in yara_in_file) or ("imphash" in yara_in_file)):
+			if not (("import \"math\"" in yara_in_file) or ("import \"cuckoo\"" in yara_in_file) or ("import \"hash\"" in yara_in_file) or ("imphash" in yara_in_file)):
 				yara_files_filtered.append(yara_file)
 	return yara_files_filtered
 
@@ -51,6 +51,7 @@ def remove_iself_duplicates(files):
 					yara_files_filtered.append(line)
 				if (not first_elf) and line.strip() == "}":
 					to_delete = False
+			yara_files_filtered.append("\n")
 	return yara_files_filtered
 
 def dump_in_file(all_rules):
